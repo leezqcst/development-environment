@@ -1,0 +1,20 @@
+PROTOC_VERSION=3.0.2
+unzip protoc-$PROTOC_VERSION-linux-x86_64.zip -d protoc-$PROTOC_VERSION
+mv protoc-$PROTOC_VERSION $HOME/software/protoc-$PROTOC_VERSION
+
+cat >> ~/.bash_profile <<"EOF"
+export PROTOC_HOME=$HOME/software/protoc-3.0.2
+export PATH=$PROTOC_HOME/bin:$PATH
+EOF
+
+source ~/.bash_profile
+
+go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+
+protoc --go_out=. *.proto
+protoc --go_out=plugins=grpc:. *.proto
+protoc --go_out=plugins=grpc,import_path=mypackage:. *.proto
+
+protoc --java_out=src/main/java -I../src \
+     ../src/google/protobuf/descriptor.proto
+
